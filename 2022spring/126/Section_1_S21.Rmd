@@ -1,0 +1,321 @@
+---
+title: "PSTAT 126"
+subtitle: "Lab 1"
+author: "Roupen Khanjian"
+date: "Spring 2021"
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+# R Review
+
+Have 2 options on how to use Rstudio
+
+1) Use the "RStudio on Cloud link" on the home page of Gauchospace. 
+
+2) Use Rstudio on your own local computer. 
+
+First Download R, then Rstudio.
+
+* **R for Mac**: https://cran.r-project.org/bin/macosx/
+* **R for windows**: https://cran.r-project.org/bin/windows/base/    
+* **RStudio** download: https://www.rstudio.com/products/rstudio/download/
+
+### How to install packages  
+
+```{r, eval = F}
+install.packages("alr4")
+install.packages(pkgs =  c("faraway", "tidyverse"))
+```
+
+* OR go to the *packages* pane click on *install* then type in package name(s) and click install. 
+
+### How to load packages  
+
+```{r, results = F, message=FALSE}
+library(alr4)
+library(faraway)
+```
+
+
+* OR go to the *packages* pane click on the white box next to the package you are trying to load. 
+
+
+### help   
+
+```{r help}
+?seq # fast way to go the help page for a function
+help(seq) # another way to go to help page for function
+```
+
+
+### Vectors
+
+```{r}
+x <- c(1,2,3,4,5)
+(x <- 1:5) # can assign and print out object by putting() around code. 
+seq(from = 1, to = 5, by = 1) # sequence of numbers starting from 1 until 5 by 1
+seq(from = 2, to = 10 , by = 2) # sequence of numbers starting from 2 until 10 by 2
+seq(1,5,1)
+
+```
+
+
+### A few other useful functions
+
+```{r functions}
+rep(3,times=5) # repeats 3 five times
+rev(x) # reverse the order of your vector
+abs(-8) # absolute value
+log(3) # natural log
+exp(1) # e^()
+summary(x) # prints out 5 number summary along with mean 
+sample(x, 1) # takes a random sample of size 1
+```
+
+**Strings:**
+
+```{r strings}
+y <- "PSTAT 126" # use "" for strings
+y
+class(y) # strings are referred to as characters in R
+paste("Hello", "World") # a way to put 2 strings together
+
+```
+
+### Working with vectors
+
+```{r vectors}
+x <- 8:18
+x
+x[2] # print out second element
+x[2] <- 19 # reassign second element
+x[2] # print out second element
+x[2:5] # print out second to the fifth element
+x[c(2,5)] # print out the 2nd and 5th elements
+
+length(x) # length of vector
+
+x <- c(2,5,7,9)
+x+1 # add 1 to every element in the vector
+x/2 # divide every element by 2
+x*2 # multiply every element by 2
+x^2 # square every element
+x**2 # another way to square every element
+
+sum(x) # Sum all vector elements
+x[4] <- NA # assign the 4th element in the vector as a missing value
+sum(x) # does not work with missing values
+sum(x, na.rm = TRUE) # use argument na.rm to remove missing values
+x <- 2:4
+prod(x) # Multiply all vector elements
+
+x <- 5:9
+sqrt(x) # square root each element
+```
+
+**And some more useful functions**
+
+```{r }
+mean(x) # mean 
+sd(x) # standard deviation
+var(x) # variance
+sort(x) # sort the vector in ascending order
+sort(x, decreasing = TRUE) # sort the vector in descending order
+min(x) # minimum value for the vector
+max(x) # maximum value for the vector
+range(x) # range (min max)
+
+x <- sqrt(x)
+x
+round(x, 2) # how to round values
+
+```
+
+### Matrices
+
+```{r matrix}
+(mat <- matrix(c(3,2,5,3,1,4,7,4,9), nrow = 3))          
+mat[2,2]
+mat[2,2]<-100
+sqrt(mat) # square root of each element in matrix
+mat^2 # square of each entry in matrix    
+mat%*%mat # matrix multiplication
+solve(mat) # Matrix inversion for non-singular matrices
+diag(mat) # extract the diagonal elements of the matrix
+mat
+t(mat) # transpose of matrix
+sum(mat) # sum of all entries in matrix
+mat[2,] # extract second row of matrix
+sum(mat[2,]) # sum up all the element of the second row of the matrix
+mat[2,] <- c(2,5,10)
+mat
+```
+
+
+**Working with data sets**
+
+```{r datasets}
+data('faithful')
+?faithful # information on the dataset
+nrow(faithful) # number of rows in the dataset
+ncol(faithful) # number of columns in the dataset
+dim(faithful) # dimension of dataset
+head(faithful) # first 6 rows (observations) of the dataset
+tail(faithful) # last 6 rows (observations) of the dataset
+names(faithful) # name of columns
+faithful[1:5,2] # extract the first 5 rows and 2nd column of data set
+faithful$waiting[1:5] # extract the first 5 rows and `waiting` column of data set
+apply(faithful, 2 , mean) # obtain the mean of each column in a dataset
+x <- 1:5
+y <- 2:6
+cbind(x,y) # create a matrix by combining vectors column-wise
+rbind(x,y) # create a matrix by combining vectors row-wise
+
+```
+
+
+**Categorical variables**
+
+```{r factors}
+x <- c(1,2,3,2,3,4,3,2,1,2,3,4,4)
+class(x)
+x <- factor(x) # how to convert a numerical vector into a categorical one
+class(x)
+levels(x) # prints out the levels of the categories
+nlevels(x) # prints out the number of levels
+
+```
+
+### Base R plotting
+
+```{r plot}
+plot(faithful$eruptions, faithful$waiting, 
+     xlab = "eruptions (minutes)", ylab = "waiting (minutes)",
+     main = "A plot of time between eruptions and duration of eruptions")
+
+```
+
+
+**Brief Tidyverse intro**
+
+```{r tidyverse, message=FALSE, warning=FALSE}
+library(tidyverse)
+faithful %>% 
+  filter(eruptions > 3) %>% # filter eruptions above 3
+  slice(1:5) # print out only first 5 rows
+
+faithful %>% 
+  select(eruptions) %>%  # select eruptions column
+  filter(eruptions <= 2) %>%  # filter eruptions equal to or below 2  
+  slice(1:5)  # filter eruptions above 3
+
+# scatterplot with eruptions on x axis and waiting on y
+ggplot(data = faithful,
+       aes(x = eruptions, y = waiting)) +
+  # red color data points. alpha changes the transparency of the points
+  geom_point(color = "red", alpha = 0.7) +
+  labs(x = "eruptions (minutes)",
+       y = "waiting (minutes)",
+       title = "A ggplot of time between eruptions and duration of eruptions") 
+
+```
+
+Other useful functions in the tidyverse are `group_by()`,`arrange()`,`mutate()` , and `summarise()`  
+For more info on tidyverse function go to https://r4ds.had.co.nz/transform.html/  
+Can use `glimpse()`(from tidyverse package)  or `str()` to get a quick look at dataset.  
+
+```{r}
+str(faithful)
+glimpse(faithful)
+```
+
+
+
+**Distributions**
+
+Can obtain random sample from a specific distribution:
+
+Type in `?distribution` in console to see all the different distributions in R.  
+
+* p for "probability", the cumulative distribution function (c. d. f.)  
+* q for "quantile", the inverse c. d. f.  
+* d for "density", the density function (p. f. or p. d. f.)  
+* r for "random", a random variable having the specified distribution  
+
+
+
+```{r norm dists}
+rnorm(10, mean = 0, sd = 1)
+```
+
+* random sample from a normal distribution with mean = 0, standard deviation = 1 
+
+
+```{r uniform dists}
+runif(10, min = 0, max = 1) 
+```
+
+* random sample from a uniform distribution with minimum value = 0, maximum value = 1
+
+```{r poisoon dists}
+rpois(10, lambda = 7)
+```
+
+* random sample from a poisson distribution with lambda parameter = 7
+
+```{r sample}
+sample <- rnorm(1000,mean = 0, sd = 1)
+mean(sample) # mean of sample
+sd(sample) # standard deviation of sample
+hist(sample) # make a simple histogram from base r plotting
+
+ggplot() +
+  geom_histogram(aes(x = sample), # using ggplot to make histograms
+                 bins = 10, color = "white", # control the number of bins 
+                 fill = "dodgerblue")
+
+```
+
+\newpage
+
+# Rmarkdown
+
+In the menu bar of RStudio, click on File, then New File, and choose R Markdown. Select the default
+option (Document), and click Ok.
+
+Rmd files are a special type of file, referred to as a dynamic document, that allows to combine narrative (text) with R code. 
+
+For more info go to https://rmarkdown.rstudio.com/
+Also see "RMarkdown Reference Guide"
+
+* Don't name 2 chunks the same!
+
+* Can write in LaTeX in Rmarkdown like this: $\bar{x} = \mu$ or:  
+
+$$\sum_{x=1}^5x^2  = 55$$
+
+#### Useful Rstudio shortcuts
+
+* alt(option) + - = assignment operator (<-)
+* Ctrl(Cmd) + alt(option) + I = new code chunk in Rmarkdown
+* Ctrl(Cmd) + shift + C = Comment or uncomment lines highlighted
+* Ctrl(Cmd) + shift + A = Reformat code in a neat way (most of the time)
+* Ctrl(Cmd) + shift + M = pipe operator (%>%)
+* alt(option) + shift + K = see all of the other fun shortcuts!
+
+#### Some other useful tips
+
+* In order to keep your files organized (on your local computer) try using R projects. https://teachdatascience.com/projects/
+* https://rstudio.com/resources/cheatsheets/ for cheatsheets
+
+
+

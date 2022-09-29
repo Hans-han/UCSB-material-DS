@@ -1,0 +1,113 @@
+*Lecture 7 Class Exercise;
+
+data pstat130;
+infile '/<REPLACE THIS>/pstat130.txt';
+input StudentName $ 1-16;
+CourseName='PSTAT130';
+run;
+
+data psych118;
+infile '/<REPLACE THIS>/psych118.txt';
+input StudentName $ 1-16;
+CourseName='PSYCH118';
+run;
+
+data poli125;
+infile '/<REPLACE THIS>/poli125.txt';
+input StudentName $ 1-16;
+CourseName='POLI125';
+run;
+
+proc print data=pstat130; run;
+proc print data=psych118; run;
+proc print data=poli125; run;
+
+
+data instructors;
+infile '/<REPLACE THIS>/instructors.txt';
+input InstructorName $ 1-13
+      AcademicRank   $ 16-20
+  @23 Salary         dollar7.0
+	  CourseName $ 32-39
+  @42 FirstClassDate mmddyy8.;
+run;
+
+proc print data=instructors;
+run;
+
+
+data classrooms;
+infile '/<REPLACE THIS>/classrooms.txt';
+input @1  BldgName $11.
+      @14 RoomNumber 3.
+      @19 CourseName $8.
+      @29 Days $5.
+      @36 Time $8.;
+run;
+proc print data=classrooms;
+run;
+
+data AllStudents;
+set pstat130 psych118 poli125;
+run;
+proc print data=AllStudents;
+run;
+
+
+proc sort data=allstudents;
+by coursename;
+run;
+proc sort data=instructors;
+by coursename;
+run;
+proc sort data=classrooms;
+by coursename;
+run;
+
+data AllInfo;
+merge allstudents instructors classrooms;
+by coursename;
+run;
+
+proc print data=allstudents noobs label;
+title 'Roster';
+by coursename;
+pageby coursename;
+label coursename='Course Name'
+      studentname='Student Name';
+run;
+
+proc sort data=AllInfo out=AllInfo_sorted;
+by studentname;
+run;
+proc print data=AllInfo_sorted noobs label;
+title 'Class List';
+by studentname;
+var coursename firstclassdate instructorname bldgname roomnumber days time;
+label studentname=Student Name
+      coursename=Course Name
+      firstclassdate=First Class Date
+	  instructorname=Instructor Name
+	  bldgname=Building Name
+	  roomnumber=Room Number
+	  days=Class Days
+	  time=Class Time;
+format firstclassdate mmddyy8.;
+run;
+
+proc format;
+value $rankfmt Asst=Assitant Professor
+               Assoc=Associate Professor;
+run;
+
+proc print data=AllInfo noobs label;
+title 'List of Students for Associate Professors';
+var studentname coursename instructorname academicrank salary;
+label studentname=Student Name
+      coursename=Course Name
+	  instructorname=Instructor Name
+	  academicrank=Academic Rank;
+format academicrank $rankfmt.
+       salary dollar7.;
+where academicrank='Assoc';
+run;

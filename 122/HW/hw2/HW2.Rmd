@@ -1,0 +1,109 @@
+---
+title: "Homework 2"
+author: "Sunrise Gao"
+date: "4/27/2022"
+output: html_document
+---
+
+```{r setup, echo=FALSE}
+library(knitr)
+library(MASS)
+library(ggplot2)
+library(ggformula)
+library(tidyverse)
+# set global chunk options: images will be 7x5 inches
+knitr::opts_chunk$set(fig.width=7, fig.height=5)
+options(digits = 4)
+
+
+## indents are for indenting r code as formatted text
+## They may need to be adjusted depending on your OS
+# if your output looks odd, increase or decrease indent
+indent1 = '    '
+indent2 = '        '
+indent3 = '            '
+```
+
+## 2
+(c)
+```{r}
+
+x<-c("15","15","15","15","15",
+     "20","20","20","20","20",
+     "25","25","25","25","25",
+     "30","30","30","30","30",
+     "35","35","35","35","35")
+y<-c(7, 7, 15, 11,9,
+     12,17,12,18,18,
+     14,19,19,18,18,
+     19,25,22,19,23,
+     7, 10,11,15,11)
+
+cotton_data <- data.frame(x, y)
+
+cotton_data
+
+aov <- aov(y~x, cotton_data)
+summary(aov)
+
+```
+
+
+
+```{r}
+
+res = aov$residuals
+
+qqnorm(res)
+qqline(res)
+
+plot(res, ylab="Error")
+abline(h=0, col="red")
+
+plot(aov, which = 1)
+
+
+
+
+```
+Plot 1: Points lie and are fairly close to the line - Normality assumption is met.
+Plot 2: There is no pattern shown as points spread randomly - Independence assumption is met.
+Plot 3: a. points are symmetric; b. points spread randomly (no pattern); c. the red line is horizontal - Constant variance assumption is met and the model is adequate.
+
+```{r}
+x<-c("1","1","1",
+     "2","2","2",
+     "3","3","3",
+     "4","4","4")
+y<-c(2.76,5.67,4.49,
+     1.43,1.70,2.19,
+     2.34,1.97,1.47,
+     0.94,1.36,1.65)
+
+wafer_data <- data.frame(x, y)
+aov2 <- aov(y~x, wafer_data)
+summary(aov2)
+
+```
+
+
+
+```{r}
+
+res2 = aov2$residuals
+
+qqnorm(res2)
+qqline(res2)
+
+plot(res2, ylab="Error")
+abline(h=0, col="red")
+
+plot(aov2, which = 1)
+
+
+
+
+```
+Plot 1: Points lie and are fairly close to the line - Normality assumption is met.
+Plot 2: There is a wave-like pattern shown as points spread - Independence assumption is not met.
+Plot 3: a. points are symmetric; b. points spread in a non-constant variance band; c. the red line is not horizontal, there is an obvious linear trend - Constant variance assumption is not met and the model is not adequate.

@@ -1,0 +1,135 @@
+---
+title: "122"
+author: "Sunrise Gao"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+
+```{r setup, include=FALSE}
+library(knitr)
+library(MASS)
+library(ggplot2)
+library(tidyverse)
+# set global chunk options: images will be 7x5 inches
+knitr::opts_chunk$set(fig.width=7, fig.height=5)
+options(digits = 4)
+
+
+## indents are for indenting r code as formatted text
+## They may need to be adjusted depending on your OS
+# if your output looks odd, increase or decrease indent
+indent1 = '    '
+indent2 = '        '
+indent3 = '            '
+```
+
+
+```{r}
+glass <- c(1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2)
+
+temp<- c(100,100,100,125,125,125,150,150,150,100,100,100,125,125,125,150,150,150)
+
+y <- c(580,568,570,1090,1087,1085,1392,1380,1386,550,530,579,1070,1035,1000,1328,1312,1299)
+
+glass<-factor(glass)
+
+temp<-factor(temp)
+
+mydata <- data.frame(glass,temp,y)
+
+aov.1 <- lm(y~glass+temp+glass:temp,data = mydata)
+
+anova(aov.1)
+
+summary(aov.1)
+
+```
+
+```{r}
+factorA <- factor(rep(1:2, each = 9))
+factorB <- factor(rep(c(100, 125, 150), time = 6))
+
+obs <- c(580, 1090, 1392,
+         568, 1087, 1380,
+         570, 1085, 1386,
+         550, 1070, 1328,
+         530, 1035, 1312,
+         579, 1000, 1299)
+
+data = data.frame(factorA, factorB, obs)
+data
+
+fit <- aov(obs ~ factorA + factorB + factorA:factorB, data = data)
+
+sum <- summary(fit)[[1]]
+
+kable(sum)
+
+df(0.05, df1 = 2, df2 = 12)
+
+
+```
+
+
+```{r}
+gt_1_100_mean <- mean(c(580,568,570))
+gt_1_100_mean
+
+gt_2_100_mean <- mean(c(550,530,579))
+gt_2_100_mean
+
+gt_1_125_mean <- mean(c(1090,1087,1085))
+gt_1_125_mean
+
+gt_2_125_mean <- mean(c(1070,1035,1000))
+gt_2_125_mean
+
+gt_1_150_mean <- mean(c(1392,1380,1386))
+gt_1_150_mean
+
+gt_2_150_mean <- mean(c(1328,1312,1299))
+gt_2_150_mean
+
+t_100_mean <- mean(c(gt_1_100_mean, gt_2_100_mean))
+t_100_mean
+
+t_125_mean <- mean(c(gt_1_125_mean, gt_2_125_mean))
+t_125_mean
+
+t_150_mean <- mean(c(gt_1_150_mean, gt_2_150_mean))
+t_150_mean
+
+gt_1_mean <- mean(c(gt_1_100_mean, gt_1_125_mean, gt_1_150_mean))
+gt_1_mean
+
+gt_2_mean <- mean(c(gt_2_100_mean, gt_2_125_mean, gt_2_150_mean))
+gt_2_mean
+
+mean <- mean(c(gt_1_mean, gt_2_mean))
+mean
+```
+
+
+###2
+
+```{r}
+Machine <- c(rep(1,8),rep(2,8),rep(3,8))
+
+Spindle <- rep(c(rep(1,4),rep(2,4)),3)
+
+Response <- c(12,9,11,12,8,9,10,8,14,15,13,14,12,10,11,13,14,10,12,11,16,15,15,14)
+
+Data_14 <- data.frame(Machine, Spindle, Response)
+Data_14
+
+fit_1 <- aov(Response ~ Machine + Spindle%in%Machine, data = Data_14)
+
+sum_1 <- summary(fit_1)[[1]]
+
+kable(sum_1)
+
+```

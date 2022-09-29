@@ -1,0 +1,119 @@
+---
+title: "PSTAT126-lab5"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(alr4)
+library(car)
+```
+
+
+#United Nation Data
+
+```{r}
+# lifeExpF: Female life expectancy, years
+# ppgdp: Per capita gross domestic product in US dollars
+# fertility: number of children per woman
+head(UN11)
+```
+
+
+## Simple linear regression
+### Model 1:
+`lifeExpF`=$\beta_0 + \beta_1 log$(`ppgdp`) + $\epsilon$;\
+```{r}
+fit1 <- lm(lifeExpF ~ log(ppgdp), data=UN11)
+summary(fit1)
+```
+```{r}
+plot(log(UN11$ppgdp),UN11$lifeExpF, 
+     main = "Marginal Plot of log(ppgdp) vs lifeExpF")
+abline(fit1, col="red")
+```
+
+### Model 2:
+`lifeExpF`=$\beta_0 + \beta_2$(`fertility`) + $\epsilon$;\
+
+```{r}
+fit2 <- lm(lifeExpF ~ fertility, data=UN11)
+summary(fit2)
+```
+
+```{r}
+plot(UN11$fertility,UN11$lifeExpF, 
+     main = "Marginal Plot of fertility vs lifeExpF")
+abline(fit2, col="red")
+```
+
+If the regressors `log(ppgdp)` and `fertility` were uncorrelated, then the two lines from the above two models (also called marginal plots) would provide a complete summary of the dependence of the response on the regressors, as the effect of `fertility` adjusted for `log(ppgdp)` would be the same as the effect of `fertility` ignoring `log(ppgdp)`. And the variation explained by them jointly would equal the sum of the variations explained individually.
+
+### Model 3:
+
+`fertility`=$\beta_0 + \beta_1$(`log(ppgdp)`) + $\epsilon$;\
+
+```{r}
+fit3 <- lm(fertility ~ log(ppgdp), data=UN11)
+summary(fit3)
+```
+
+
+```{r}
+plot(log(UN11$ppgdp), UN11$fertility,
+     main = "Marginal Plot of log(ppgdp) vs fertility")
+abline(fit3, col="red")
+```
+
+Countries with larger `log(ppgdp)` also tend to have lower `fertility` and so these variables are negatively correlated. The regressors will in part be explaining the same variation.\
+The variation explained by both variables can be smaller than the sum of the individual variation explained if the regressors are in part explaining the same variation. But knowing both gives more information than knowing just one of them if they are perfectly correlated. \
+
+
+## Added-Variable Plots
+
+To get the effect of adding predictor $x_2$ (`fertility`) to the model that already includes $x_1$ (`log(ppgdp)`), we need to examine the part of the response $y$ (`lifeExpF`) not explained by $x_1$ and the part of the new regressor $x_2$ not explained by $x_1$.\
+Model `fit1` residuals: the part of the response not explained by the regression on `log(ppgdp)`.\
+Model `fit3` residuals: the part of the new regressor `fertility` not explained by `log(ppgdp)`.\
+The added-variable plot is of the unexplained part of the response `lifeExpF` from `fit1` residuals on the unexplained part of the added regressor from `fit3` residuals.\
+It summarizes the relationship between `lifeExpF` and `fertility` adjusting for `log(ppgdp)`, while the marginal plot of `lifeExpF` vs `fertility` shows this relationship but ignoring `log(ppgdp)`.\
+
+If the added variable plot shows a stronger relationship than does marginal plot, meaning that the points in the plot show less variation about the fitted straight line, then the two variables act jointly to explain extra variation. If the two graphs have similar variation, then the total explained variability by both variables is less than the additive amount.
+
+
+### Model 4:
+Fit a simple linear regression on residuals:
+
+```{r}
+fit5 <- lm(fit1$residuals ~ fit3$residuals)
+summary(fit5)
+```
+
+```{r}
+par(mfrow = c(1, 2))
+plot(fit3$residuals, fit1$residuals,
+     main="Added-variable plot")
+abline(fit5, col="red")
+
+plot(UN11$fertility, UN11$lifeExpF, 
+     main = "Marginal Plot")
+abline(fit2, col="red")
+
+```
+
+Two estimates for `fertility`:
+$\hat{\beta}_2 = -6.224$ ignoring `log(ppgdp)`;\
+$\hat{\beta}_2 = -4.199$ adjusting for `log(ppgdp)`;\
+The slope in the added-variable plot is about 30% smaller than the slope in the plot that ignores `log(ppgdp)`, although in this instance, after adjusting for `log(ppgdp)`, the effect of `fertility` is still important. The regressor `fertility` is useful after adjusting for `log(ppgdp)`. 
+
+It can be shown that the slope in the added variable plot is equal to the OLS estimate of corresponding coeffcient in the multiple linear regression.Mean point of residuals is $0$, so the regression line in added variable plot passes through the origin.
+
+```{r}
+fit6 <- lm(lifeExpF~log(ppgdp) + fertility, data=UN11)
+summary(fit6)
+avPlots(fit6)
+```
